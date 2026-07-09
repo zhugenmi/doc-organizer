@@ -1,0 +1,98 @@
+{
+  "skill_name": "doc-organizer",
+  "evals": [
+    {
+      "id": 1,
+      "name": "fullstack-greenfield",
+      "prompt": "我在做一个新项目，FastAPI 后端 + React 前端，做的是把 PDF 上传后用 LLM 抽取结构化数据（发票、合同、简历）。现在还没开始写文档，想先把 docs/ 的结构搭好，免得以后散落一地。项目还没上线，团队就我一个人 + 一个兼职前端。帮我设计 docs/ 目录结构并写好 README 导航。不需要写实际架构文档，只要骨架和规范。",
+      "expected_output": "A docs/ directory tree with fullstack-appropriate subdirs (arch/{overview,pipeline,client,api} or a trimmed version), a README.md with boundary declaration table and scenario sections, and clear naming/date conventions. Should NOT pre-create empty adr/runbooks unless justified. Should adapt to solo+1 team (maybe skip agents/).",
+      "files": [],
+      "assertions": [
+        {"text": "Proposes a docs/ directory structure with subdirectories (not a single flat docs/)", "type": "structural"},
+        {"text": "README.md content includes a boundary declaration table or explicit per-directory rules", "type": "content"},
+        {"text": "Uses date-based naming convention (YYYY-MM-DD-slug.md) for doc files", "type": "naming"},
+        {"text": "Does NOT pre-create empty adr/, runbooks/, or agents/ directories without justifying why they'd have content", "type": "restraint"},
+        {"text": "Adapts structure to the team size (solo + part-time frontend) - e.g. skips agents/ or notes it's unnecessary for solo", "type": "adaptation"},
+        {"text": "Explains the WHY behind choices (boundary declarations, date-first naming) rather than just asserting rules", "type": "reasoning"}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "reorganize-messy-phases",
+      "prompt": "我的项目 docs/ 下现在有 20 多个 phase 文件（phase1_*.md 到 phase22_*.md），是按开发阶段记的，现在想整理成按主题分类的结构。文件名像 phase14_paper_reading.md、phase18_retrieval_approval.md 这种。有些 phase 是同一个功能的两次迭代（比如 phase16 和 phase17 都是讲删除功能的）。帮我设计一个整理方案：怎么分类、怎么命名、哪些该合并、README 怎么写。不需要真的执行，给我方案就行。",
+      "expected_output": "A reorganization plan that: (1) inventories the 22 phase files and extracts dates/topics, (2) proposes a directory structure (likely arch/ + fix/ + eval/ etc.), (3) gives rename mapping phase* -> YYYY-MM-DD-slug.md, (4) identifies which phase pairs to merge (the 16+17 delete ones) and how (--- separator, provenance line), (5) proposes README with boundary table. Should explain WHY (dates first, slugs not phase numbers, merge related not just clutter-reduce).",
+      "files": [],
+      "assertions": [
+        {"text": "Inventories all 22 phase files (or a representative subset) with inferred dates and topics", "type": "completeness"},
+        {"text": "Proposes date-based rename (phase* -> YYYY-MM-DD-slug.md), not keeping phase numbers in filenames", "type": "naming"},
+        {"text": "Proposes a themed directory structure (arch/, fix/, eval/, etc.) rather than keeping phases/ flat", "type": "structure"},
+        {"text": "Identifies the phase16+phase17 delete-function pair as merge candidates", "type": "merge-detection"},
+        {"text": "Merge procedure preserves both original bodies (e.g. --- separator) with provenance line", "type": "merge-procedure"},
+        {"text": "README proposal includes a boundary declaration table for the new directories", "type": "readme"},
+        {"text": "Explains WHY phase numbers are dropped (future readers don't know what phase 14 was)", "type": "reasoning"}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "cli-tool-small",
+      "prompt": "我写了个 CLI 工具，用 Python 的 click 框架，功能是把 markdown 文件转成 PDF（带语法高亮和目录）。现在就一个 README.md 在根目录和两个文档：一个 changelog、一个贡献指南。这个规模需要搞 docs/ 目录吗？如果要的话怎么搞？",
+      "expected_output": "Should recognize this is a CLI tool at small scale and NOT over-engineer. Likely recommendation: either keep flat (docs/ with 2-3 files is fine) or a minimal structure (maybe just docs/arch/overview/ when it grows). Should explicitly push back on creating arch/pipeline/, client/, monitor/, runbooks/, adr/ for a CLI tool with 2 docs. Should mention the 'don't pre-create empty dirs' principle. Boundary declarations still useful but minimal.",
+      "files": [],
+      "assertions": [
+        {"text": "Explicitly addresses whether docs/ is needed at this scale (2 docs) rather than defaulting to creating it", "type": "scale-judgment"},
+        {"text": "Recommends a minimal or no-docs/ approach (not the full arch/{overview,pipeline,client,api} superset)", "type": "restraint"},
+        {"text": "Does NOT propose monitor/, runbooks/, agents/, or client/ for a CLI tool", "type": "restraint"},
+        {"text": "Cites the 'don't pre-create empty directories' principle or equivalent reasoning", "type": "principle"},
+        {"text": "Gives a growth trigger (e.g. 'create docs/ when X happens' or 'subdivide when >5 files')", "type": "growth-trigger"}
+      ]
+    },
+    {
+      "id": 4,
+      "name": "arch-doc-content-guidance",
+      "prompt": "我在写一篇架构文档，系统是一个 LLM 论文综述生成服务：用户输入一个话题，系统检索相关论文，用 LangGraph 编排多个 agent 生成综述。架构已经定型了，我想把这篇文档写好，让新来的工程师读完就能理解系统怎么跑、能独立排查问题。这篇文档应该包含哪些内容？给我一个结构和大纲，不需要写正文。",
+      "expected_output": "Should propose an architecture doc structure that covers: background & goals, module breakdown (table of modules with responsibilities/dependencies), operating mechanism (lifecycle, request/data flow, state machine if applicable, concurrency model, failure/retry handling), interface contracts, tech stack table (linking to ADRs for selection rationale), known limits/risks. Should reference or align with the arch.template.md structure. Should emphasize operating mechanism and module boundaries as the parts that matter most for new-engineer onboarding.",
+      "files": [],
+      "assertions": [
+        {"text": "Includes a module breakdown section (table or list of modules with responsibilities and dependencies)", "type": "content-module"},
+        {"text": "Includes an operating mechanism section covering at least 2 of: lifecycle, data flow, state machine, concurrency, failure handling", "type": "content-mechanism"},
+        {"text": "Includes a tech stack section that links to ADRs for selection rationale (not just a bare list of technologies)", "type": "content-techstack"},
+        {"text": "Includes interface contracts / API section", "type": "content-api"},
+        {"text": "Includes known limits / risks / non-goals section (honest about shortcomings)", "type": "content-limits"},
+        {"text": "Explains WHY operating mechanism matters for new-engineer onboarding (not just lists it as a section)", "type": "reasoning"},
+        {"text": "Does NOT put tech-selection reasoning (why X not Y) in the arch doc - points to ADRs instead", "type": "boundary"}
+      ]
+    },
+    {
+      "id": 5,
+      "name": "fix-doc-content-guidance",
+      "prompt": "线上出了一个 bug：用户上传 PDF 后，偶尔会报 500 错误。我们花了一天排查，发现是 PDF 里有些页是扫描件（图片），文本提取层返回空，下游的 LLM 调用因为空输入超时，重试 3 次后整个请求失败。我修了这个 bug（加了空输入检测和降级处理），想写一篇修复文档。这篇文档该怎么写？给我结构和要点。",
+      "expected_output": "Should propose a fix doc structure that covers: problem background (impact, severity, how discovered), symptoms (observable errors, logs, repro conditions), root cause analysis with investigation path (not just the answer - show how they got there, distinguish direct cause 'empty input caused timeout' from root cause 'no validation for scanned PDFs'), solution (temp fix vs root fix, why this approach), verification (executable steps to confirm fix), retrospective (trigger conditions, prevention measures, reusable lessons). Should emphasize root cause and retrospective as the sections that make the doc worth keeping.",
+      "files": [],
+      "assertions": [
+        {"text": "Includes a root cause analysis section with an investigation path (not just the final answer)", "type": "content-rootcause"},
+        {"text": "Distinguishes direct cause (empty input -> timeout) from root cause (missing validation for scanned PDFs)", "type": "content-rootcause-depth"},
+        {"text": "Includes a verification section with executable steps (not just 'verified')", "type": "content-verification"},
+        {"text": "Includes a retrospective section with prevention measures and reusable lessons", "type": "content-retrospective"},
+        {"text": "Explains WHY the retrospective/root-cause matters (without it, the doc is just a changelog entry)", "type": "reasoning"},
+        {"text": "Includes symptoms with logs / repro conditions", "type": "content-symptoms"}
+      ]
+    },
+    {
+      "id": 6,
+      "name": "problem-classification",
+      "prompt": "我项目里有几个问题想记录成文档，但不确定放哪个目录：\n1. LLM 生成综述时偶尔编造不存在的论文引用\n2. 数据库查询在数据量超过 10 万行后变慢到 5 秒\n3. 部署到生产时环境变量没加载导致服务起不来\n4. 用户反馈生成的综述语气太正式，想要更口语化\n5. 前端调用后端 API 时 CORS 配置错了\n6. 我们要不要把检索从关键词改成向量的决策过程\n\n帮我判断每个该放哪个目录，并说明判断依据。",
+      "expected_output": "Should classify each correctly: (1) eval/bad-cases/ - model output quality (hallucinated citation, fix is in prompt/model); (2) fix/ - perf issue, fix in code/SQL/index; (3) fix/ - deployment issue, fix in config/process; (4) eval/bad-cases/ - model output quality (tone, fix in prompt); (5) fix/ - integration issue, fix in code/config; (6) adr/ - decision record. Should articulate the boundary rule: fix = fix lives in code/config/process, eval/bad-cases = fix lives in prompt/data/model, adr = decision with alternatives. Should NOT create a new 'troubleshooting/' or 'issues/' directory.",
+      "files": [],
+      "assertions": [
+        {"text": "Classifies hallucinated citation (1) as eval/bad-cases/ (model output quality, not code bug)", "type": "classification"},
+        {"text": "Classifies slow query (2) as fix/ (perf issue, fix in code/SQL)", "type": "classification"},
+        {"text": "Classifies deployment env var (3) as fix/ (deployment issue, fix in config/process)", "type": "classification"},
+        {"text": "Classifies tone issue (4) as eval/bad-cases/ (model output quality, fix in prompt)", "type": "classification"},
+        {"text": "Classifies CORS (5) as fix/ (integration issue, fix in code/config)", "type": "classification"},
+        {"text": "Classifies retrieval decision (6) as adr/ (decision with alternatives)", "type": "classification"},
+        {"text": "Articulates the boundary principle: the split is WHERE THE FIX LIVES (code/config vs prompt/model), not symptom severity", "type": "reasoning"},
+        {"text": "Does NOT propose a new troubleshooting/ or issues/ directory for non-bug problems", "type": "restraint"}
+      ]
+    }
+  ]
+}
